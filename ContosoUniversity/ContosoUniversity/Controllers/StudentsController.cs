@@ -81,27 +81,17 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Students/Edit/5
-        public async Task<IActionResult> Edit(int id, [Bind("ID,EnrollmentDate,FirstMidName,LastName")] Student student)
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (id != student.ID)
+            if (id == null)
             {
                 return NotFound();
             }
-            if (ModelState.IsValid)
+
+            var student = await _context.Students.FindAsync(id);
+            if (student == null)
             {
-                try
-                {
-                    _context.Update(student);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException /* ex */)
-                {
-                    //Log the error (uncomment ex variable name and write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                        "Try again, and if the problem persists, " +
-                        "see your system administrator.");
-                }
+                return NotFound();
             }
             return View(student);
         }
